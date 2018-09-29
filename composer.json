@@ -1,0 +1,30 @@
+{
+  "name": "youngsource/typed-enum",
+  "description": "A small class allowing for typed enumerations.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ghlen Nagels",
+      "email": "ghlen@pm.me"
+    }
+  ],
+  "minimum-stability": "alpha",
+  "require": {
+    "php": ">7.2.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^0.10.3",
+    "phpunit/phpunit": "^7.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Youngsource\\TypedEnum\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Youngsource\\TypedEnum\\Tests\\": "testing"
+    }
+  }
+}
