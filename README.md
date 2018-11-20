@@ -160,7 +160,7 @@ You can easily use the power of you ide by simply adding @method tags in the doc
 /**
  * @method static TypedEnum TEST()
  */
-final Foo extends TypedEnum {
+final class Foo extends TypedEnum {
     protected const TEST = 'test';
 }
 ```

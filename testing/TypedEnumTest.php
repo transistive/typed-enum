@@ -93,6 +93,6 @@ class TypedEnumTest extends TestCase
     }
 
     public function testEqual(): void {
-        static::assertTrue(TypedEnumFilled::TEST() === TypedEnumFilled::TEST());
+        static::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::TEST());
     }
 }

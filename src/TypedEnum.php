@@ -113,10 +113,7 @@ abstract class TypedEnum implements TypedEnumInterface
             if ($value instanceof TypedEnumInterface && $value->getValue() === $constValue) {
                 return $value;
             }
-            if ($constant === $constValue) {
-                if ($value instanceof TypedEnumInterface) {
-                    return $value;
-                }
+            if ($value === $constValue) {
                 static::getEnums()[$constant] = new static($value);
                 return static::getEnums()[$constant];
             }
