@@ -1,144 +1,116 @@
-<?php
+<?php /** @noinspection LateStaticBindingInspection */
 
 declare(strict_types=1);
 
 namespace Youngsource\TypedEnum;
 
-use LogicException;
 use ReflectionClass;
-use function is_array;
+use Youngsource\TypedEnum\Errors\InvalidEnumerationError;
+use Youngsource\TypedEnum\Errors\NonExistingEnumerationError;
+use function is_scalar;
+use function sprintf;
 
 /**
  * A simple typed enumeration.
  *
  * Class whose constants define an enumeration
+ *
+ * @template T of scalar
  */
-abstract class TypedEnum implements TypedEnumInterface
+abstract class TypedEnum
 {
-    /** @var array[] keeps track of all the reflected constants */
-    private static $enums = [];
-    /** @var mixed */
+    private static ?TypedEnumCollectionManager $manager = null;
+    /** @var T */
     private $value;
 
     /**
-     * TypedEnum constructor.
-     *
-     * @param mixed $value
+     * @param T $value
      */
-    private function __construct($value)
-    {
-        $this->initialize($value);
-    }
-
-    /**
-     * Initializes the enumerated value.
-     *
-     * @param mixed $value
-     */
-    protected function initialize($value): void
+    final private function __construct($value)
     {
         $this->value = $value;
     }
 
     /**
-     * {@inheritdoc}
+     * @param null $args
+     * @throws NonExistingEnumerationError|InvalidEnumerationError
      */
-    final public static function __callStatic($name, $variables)
+    final public static function __callStatic(string $name, $args): TypedEnum
     {
-        static::bootIfNotBooted();
-        if (!static::constantExists($name)) {
-            throw new LogicException("Method with given name: $name does not exists");
+        $manager = static::bootIfNotBooted();
+        $value = $manager->get(static::class)->get($name);
+        if ($value === null) {
+            throw new NonExistingEnumerationError(sprintf('No enumeration found for: %s::%s', static::class, $name));
         }
-        $enum = static::getEnums()[$name];
-        return  static::getEnums()[$name] = $enum instanceof TypedEnumInterface ?
-            $enum :
-            new static($enum);
+        return $value;
     }
 
     /**
-     * Boots the Typed Enum if it didn't happen already.
+     * @throws InvalidEnumerationError
      */
-    protected static function bootIfNotBooted(): void
+    private static function bootIfNotBooted(): TypedEnumCollectionManager
     {
-        if (!static::isBooted()) {
-            static::boot();
+        if (self::$manager === null) {
+            self::$manager = new TypedEnumCollectionManager();
         }
+
+        if (!self::$manager->exists(static::class)) {
+            static::boot(self::$manager);
+        }
+
+        return self::$manager;
     }
 
     /**
-     * Checks to see if the Typed Enum has been booted already.
-     * @return bool
+     * @throws InvalidEnumerationError
      */
-    private static function isBooted(): bool
+    private static function boot(TypedEnumCollectionManager $manager): void
     {
-        return is_array(self::$enums[static::class] ?? false);
-    }
-
-    /**
-     * Boots the TypedEnum class.
-     */
-    protected static function boot(): void
-    {
-        /** @noinspection PhpUnhandledExceptionInspection  cannot be thrown as the static::class always exists. */
         $reflection = new ReflectionClass(static::class);
-        self::$enums[static::class] = $reflection->getConstants();
-    }
 
-    /**
-     * Checks to see if the constant exists.
-     *
-     * @param string $constant
-     * @return bool
-     */
-    private static function constantExists(string $constant): bool
-    {
-        return array_key_exists($constant, static::getEnums());
-    }
-
-    /**
-     * @return array
-     */
-    private static function & getEnums(): array
-    {
-        return self::$enums[static::class];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function resolve($constValue): ?TypedEnumInterface
-    {
-        static::bootIfNotBooted();
-        foreach (static::getEnums() as $constant => $value) {
-            if ($value instanceof TypedEnumInterface && $value->getValue() === $constValue) {
-                return $value;
+        $tbr = [];
+        foreach ($reflection->getReflectionConstants() as $constant) {
+            $value = $constant->getValue();
+            if (!is_scalar($value)) {
+                throw new InvalidEnumerationError(
+                    sprintf('The enumeration %s::%s is not a scalar value', static::class, $constant->getName())
+                );
             }
-            if ($value === $constValue) {
-                static::getEnums()[$constant] = new static($value);
-                return static::getEnums()[$constant];
-            }
+            $tbr[$constant->getName()] = new static($value);
         }
-        return null;
+        $manager->add(static::class, new TypedEnumCollection($tbr));
     }
 
     /**
-     * {@inheritdoc}
+     * Resolves the enumeration based on its value
+     *
+     * @template U of scalar
+     * @param U $constValue
+     * @return static<U>|null
+     *
+     * @throws InvalidEnumerationError
      */
-    public static function getAllInstances(): array
+    final public static function resolve($constValue): ?TypedEnum
     {
-        static::bootIfNotBooted();
-        return self::$enums[static::class] = array_map(
-            function ($value) {
-                return $value instanceof TypedEnumInterface ? $value : new static($value);
-            },
-            static::getEnums()
-        );
+        $manager = static::bootIfNotBooted();
+        return $manager->get(static::class)->search($constValue);
     }
 
     /**
-     * {@inheritdoc}
+     * @return array<string, TypedEnum>
+     *
+     * @throws InvalidEnumerationError
      */
-    public function getValue()
+    final public static function getAllInstances(): array
+    {
+        $manager = static::bootIfNotBooted();
+        return $manager->get(static::class)->toArray();
+    }
+
+    /**
+     * @return T
+     */
+    final public function getValue()
     {
         return $this->value;
     }

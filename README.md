@@ -1,6 +1,6 @@
 # Typed Enumerations
 
-A simple, lightweight, efficient and extensible typed enumeration library. Type hint your enumerated options in an efficient and strict way to eliminate unintended side effects and bugs introduced by typo's.
+Typed-enum is A simple, lightweight and efficient enumeration library. Type hint your enumerated options efficiently and strictly to eliminate unintended side effects and bugs introduced by typos.
 
 ## How to use:
 
@@ -8,21 +8,22 @@ A simple, lightweight, efficient and extensible typed enumeration library. Type 
 
 Download with composer:
 ```
-composer require "youngsource/typed-enum"
+composer require "laudis/typed-enum"
 ```
 
 ### Extending from TypedEnum 
 
-Extend from TypedEnum and use protected or public constants to define the enumeration:
+Extend from TypedEnum and use any scalar constants to define the enumeration:
 
 ```
 final Foo extends TypedEnum {
-    protected const BAR = 'bar';
-    protected const BAZ = 'bas';
+    private const BAR = 'bar';
+    private const BAZ = 2;
+    private const FOO = 2.1;
 } 
 ```
 
-Instances of Foo can now be created by using the __callstatic method based on the name of the constant:
+You can now create instances of Foo by using the __callstatic method based on the name of the constant:
 
 ```
 Foo::BAR()  // Returns an instance of Foo with value 'bar'
@@ -30,7 +31,7 @@ Foo::BAR()  // Returns an instance of Foo with value 'bar'
 
 ### Testing for equality
 
-Testing for equality can be done in a strict way as TypedEnum guarantees there to be only one instance of the same enumerated value at runtime.
+As a bonus, you can now use strict comparisons. TypedEnum guarantees there to be only one instance of the same enumerated value at runtime.
 
 ```
 function isBar(Foo $enum): bool {
@@ -48,106 +49,11 @@ echo Foo::BAR()->getValue(); //'bar'
 
 ### Resolve the enumeration
 
-Resolve an enumeration based on it's value. 
+Resolve an enumeration based on its value. 
 > NOTE: The resolving is based on the first found value that was assigned to it:
 
 ```
 echo Foo::resolve('bar') === Foo::BAR() // true 
-```
-
-## Custom solutions
-
-### The TypedEnumInterface
-
-Simply use the interface if you do not want to extend the TypedEnum class and design your own implementation.
-
-```
-final class Bar implements TypedEnumInterface {
-    
-    /**
-	 * Returns all the instances of the enumeration.
-     *
-	 * @return array|TypedEnumInterface[]
-	 */
-	public static function getAllInstances(): array 
-	{
-	    // custom logic here
-	}
-
-	/**
-	 * Resolves the Typed Enum instance from the value first found assigned to it.
-	 *
-	 * @param mixed $value Resolves the enumeration instance
-	 * @return null|TypedEnumInterface
-	 */
-	public static function resolve($value): ?TypedEnumInterface 
-	{
-	    // custom logic here
-	}
-
-	/**
-	 * Call an enumeration statically.
-	 *
-	 * @param string $name The name of the enumeration.
-	 * @param string ...$variables The variables passed to the enumeration.
-	 * @return mixed
-     * @throws LogicException thrown if the enumeration does not exist
-	 */
-	public static function __callStatic($name, $variables)
-	{
-	    // custom logic here
-	}
-
-	/**
-	 * Returns the value of the enumerated instance.
-	 *
-	 * @return mixed
-	 */
-	public function getValue()
-	{
-	    // custom logic here
-	}
-}
-```
-
-### The boot method
-
-The boot fase is defined as the moment exactly before the first enumerated value enters the application. A simple hook into this bootfase of the TypedEnum can be achieved by overriding the boot() method:
-
-```
-final class Baz extends TypedEnum {
-    protected static function boot(): void {
-        parent::boot();
-        echo 'booting';
-    }
-    protected const BOOT = 'boot';
-    protected const AFTER_BOOT = 'after boot';
-}
-
-\\\Somewhere in your application
-Baz::BOOT(); // echo's boot and returns the TypedEnum
-Baz::BOOT(); // Just returns the TypedEnum
-Baz::AFTER_BOOT(); // Just returns the TypedEnum
-```
-
-### Hook into the initialization fase
-
-The initialization fase is defined as the moment a specific enumerated value enters the application: A simple hook into the initialization fase can be achieved by extending the initialization method.
-
-```
-final class Baz extends TypedEnum {
-    protected function initialize($value): void {
-        parent::initialize($value);
-        echo "initializing $value";
-    }
-    protected const INIT_ONE = 'one';
-    protected const INIT_TWO = 'two';
-}
-
-\\\Somewhere in your application
-Baz::INIT_ONE(); // echo's 'initalizing one' and returns the TypedEnum
-Baz::INIT_ONE(); // Just returns the TypedEnum
-Baz::INIT_TWO(); // echo's 'initialzing two' and returns the TypedEnum
 ```
 
 ## Tips
@@ -165,9 +71,23 @@ final class Foo extends TypedEnum {
 }
 ```
 
+### Psalm
+
+We built TypedEnum with psalm! With these powerful annotations, you can now hint the scalar value of the enumeration:
+
+```
+/**
+ * @method Foo<string> TypedEnum TEST()
+ */
+final class Foo extends TypedEnum {
+    protected const TEST = 'test';
+}
+```
+
+
 ### Easy Bug protection
 
-Php 7.2 allows for protected constants, use them for unintended side effects:
+Php 7.2 allows for protected constants, and 7.4 uses private ones. Use these features to protect against unintended side effects!
 
 ```
 echo Foo::BAR === Foo::BAR() // echo's false but is impossible if it was a protected constant
@@ -175,4 +95,4 @@ echo Foo::BAR === Foo::BAR() // echo's false but is impossible if it was a prote
 
 
 ***
-Developed by [youngsource](https://www.youngsource.be)
+Developed by [laudis](https://laudis.tech)
