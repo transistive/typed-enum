@@ -1,5 +1,5 @@
 {
-  "name": "youngsource/typed-enum",
+  "name": "laudis/typed-enum",
   "description": "A small class allowing for typed enumerations.",
   "type": "library",
   "license": "MIT",
@@ -15,16 +15,18 @@
   },
   "require-dev": {
     "phpunit/phpunit": "9.*",
-    "vimeo/psalm": "^3.16"
+    "vimeo/psalm": "^3.16",
+    "phpbench/phpbench": "^0.17.1",
+    "friendsofphp/php-cs-fixer": "^2.16"
   },
   "autoload": {
     "psr-4": {
-      "Youngsource\\TypedEnum\\": "src/"
+      "Laudis\\TypedEnum\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Youngsource\\TypedEnum\\Tests\\": "testing"
+      "Laudis\\TypedEnum\\Tests\\": "tests"
     }
   }
 }

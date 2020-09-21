@@ -1,19 +1,28 @@
 <?php
 
+declare(strict_types=1);
 
-namespace Youngsource\TypedEnum\Tests\Implementation;
+/*
+ * This file is part of the Laudis TypedEnum library
+ *
+ * (c) Laudis <https://laudis.tech>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use Youngsource\TypedEnum\TypedEnum;
+namespace Laudis\TypedEnum\Tests\Implementation;
+
+use Laudis\TypedEnum\TypedEnum;
 
 /**
  * @method static<string> TypedEnumFilled TEST()
  * @method static<string> TypedEnumFilled TEST_NO_SAME_VALUE()
- * @method static<int> TypedEnumFilled TEST_NUMERIC()
- * @method static<null> TypedEnumFilled TEST_NULL()
+ * @method static<int>    TypedEnumFilled TEST_NUMERIC()
  * @method static<string> TypedEnumFilled TEST_SAME_ONE()
  * @method static<string> TypedEnumFilled TEST_SAME_TWO()
  */
-final class SecondTypedEnum extends TypedEnum
+final class TypedEnumFilled extends TypedEnum
 {
     private const TEST = 'test';
     private const TEST_NO_SAME_VALUE = 'abc';

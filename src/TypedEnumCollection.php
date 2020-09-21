@@ -1,7 +1,17 @@
 <?php
 
+declare(strict_types=1);
 
-namespace Youngsource\TypedEnum;
+/*
+ * This file is part of the Laudis TypedEnum library
+ *
+ * (c) Laudis <https://laudis.tech>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Laudis\TypedEnum;
 
 /**
  * @internal
@@ -9,7 +19,7 @@ namespace Youngsource\TypedEnum;
  */
 final class TypedEnumCollection
 {
-    /** @var T  */
+    /** @var T */
     private array $enumValues;
 
     /**
@@ -34,17 +44,14 @@ final class TypedEnumCollection
     }
 
     /**
-     * @template U of scalar
+     * @template U
+     *
      * @param U $value
-     * @return TypedEnum<U>|null
+     *
+     * @return array<int, TypedEnum<U>>
      */
-    public function search($value): ?TypedEnum
+    public function search($value): array
     {
-        foreach ($this->enumValues as $enumValue) {
-            if ($enumValue->getValue() === $value) {
-                return $enumValue;
-            }
-        }
-        return null;
+        return array_values(array_filter($this->enumValues, static fn ($enum) => $enum->getValue() === $value));
     }
 }

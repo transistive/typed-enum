@@ -1,13 +1,20 @@
-<?php /** @noinspection LateStaticBindingInspection */
+<?php
 
 declare(strict_types=1);
 
-namespace Youngsource\TypedEnum;
+/*
+ * This file is part of the Laudis TypedEnum library
+ *
+ * (c) Laudis <https://laudis.tech>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use ReflectionClass;
-use Youngsource\TypedEnum\Errors\InvalidEnumerationError;
-use Youngsource\TypedEnum\Errors\NonExistingEnumerationError;
-use function is_scalar;
+namespace Laudis\TypedEnum;
+
+use Laudis\TypedEnum\Errors\InvalidEnumerationError;
+use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use function sprintf;
 
 /**
@@ -15,7 +22,7 @@ use function sprintf;
  *
  * Class whose constants define an enumeration
  *
- * @template T of scalar
+ * @template T
  */
 abstract class TypedEnum
 {
@@ -25,24 +32,60 @@ abstract class TypedEnum
 
     /**
      * @param T $value
+     * @internal
      */
-    final private function __construct($value)
+    public function __construct($value)
     {
         $this->value = $value;
     }
 
     /**
      * @param null $args
-     * @throws NonExistingEnumerationError|InvalidEnumerationError
+     *
+     * @throws InvalidEnumerationError|NonExistingEnumerationError
      */
-    final public static function __callStatic(string $name, $args): TypedEnum
+    final public static function __callStatic(string $name, $args): self
     {
-        $manager = static::bootIfNotBooted();
-        $value = $manager->get(static::class)->get($name);
+        $value = static::bootIfNotBooted()->get(static::class)->get($name);
         if ($value === null) {
             throw new NonExistingEnumerationError(sprintf('No enumeration found for: %s::%s', static::class, $name));
         }
+
         return $value;
+    }
+
+    /**
+     * Resolves the enumeration based on its value.
+     *
+     * @template U of scalar
+     *
+     * @param U $constValue
+     *
+     * @throws InvalidEnumerationError
+     *
+     * @return array<int, static<U>>
+     */
+    final public static function resolve($constValue): ?array
+    {
+        return static::bootIfNotBooted()->get(static::class)->search($constValue);
+    }
+
+    /**
+     * @throws InvalidEnumerationError
+     *
+     * @return array<string, TypedEnum>
+     */
+    final public static function getAllInstances(): array
+    {
+        return static::bootIfNotBooted()->get(static::class)->toArray();
+    }
+
+    /**
+     * @return T
+     */
+    final public function getValue()
+    {
+        return $this->value;
     }
 
     /**
@@ -54,65 +97,6 @@ abstract class TypedEnum
             self::$manager = new TypedEnumCollectionManager();
         }
 
-        if (!self::$manager->exists(static::class)) {
-            static::boot(self::$manager);
-        }
-
         return self::$manager;
     }
-
-    /**
-     * @throws InvalidEnumerationError
-     */
-    private static function boot(TypedEnumCollectionManager $manager): void
-    {
-        $reflection = new ReflectionClass(static::class);
-
-        $tbr = [];
-        foreach ($reflection->getReflectionConstants() as $constant) {
-            $value = $constant->getValue();
-            if (!is_scalar($value)) {
-                throw new InvalidEnumerationError(
-                    sprintf('The enumeration %s::%s is not a scalar value', static::class, $constant->getName())
-                );
-            }
-            $tbr[$constant->getName()] = new static($value);
-        }
-        $manager->add(static::class, new TypedEnumCollection($tbr));
-    }
-
-    /**
-     * Resolves the enumeration based on its value
-     *
-     * @template U of scalar
-     * @param U $constValue
-     * @return static<U>|null
-     *
-     * @throws InvalidEnumerationError
-     */
-    final public static function resolve($constValue): ?TypedEnum
-    {
-        $manager = static::bootIfNotBooted();
-        return $manager->get(static::class)->search($constValue);
-    }
-
-    /**
-     * @return array<string, TypedEnum>
-     *
-     * @throws InvalidEnumerationError
-     */
-    final public static function getAllInstances(): array
-    {
-        $manager = static::bootIfNotBooted();
-        return $manager->get(static::class)->toArray();
-    }
-
-    /**
-     * @return T
-     */
-    final public function getValue()
-    {
-        return $this->value;
-    }
 }
-

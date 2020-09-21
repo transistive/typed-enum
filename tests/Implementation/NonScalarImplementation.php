@@ -11,10 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Laudis\TypedEnum\Errors;
+namespace Laudis\TypedEnum\Tests\Implementation;
 
-use Error;
+use Laudis\TypedEnum\TypedEnum;
 
-final class NonExistingEnumerationError extends Error
+final class NonScalarImplementation extends TypedEnum
 {
+    private const NULL = null;
 }
