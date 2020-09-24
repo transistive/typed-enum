@@ -49,11 +49,11 @@ echo Foo::BAR()->getValue(); //'bar'
 
 ### Resolve the enumeration
 
-Resolve an enumeration based on its value. 
-> NOTE: The resolving is based on the first found value that was assigned to it:
+Resolve an enumeration based on its value.
+The resolve method will return all enumerations with the same value in the array.
 
 ```
-echo Foo::resolve('bar') === Foo::BAR() // true 
+echo Foo::resolve('bar')[0] === Foo::BAR() // true 
 ```
 
 ## Tips
