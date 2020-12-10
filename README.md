@@ -8,14 +8,14 @@ Typed-enum is A simple, lightweight and efficient enumeration library. Type hint
 
 Download with composer:
 ```
-composer require "laudis/typed-enum"
+composer require laudis/typed-enum
 ```
 
 ### Extending from TypedEnum 
 
 Extend from TypedEnum and use any scalar constants to define the enumeration:
 
-```
+```php
 final Foo extends TypedEnum {
     private const BAR = 'bar';
     private const BAZ = 2;
@@ -25,7 +25,7 @@ final Foo extends TypedEnum {
 
 You can now create instances of Foo by using the __callstatic method based on the name of the constant:
 
-```
+```php
 Foo::BAR()  // Returns an instance of Foo with value 'bar'
 ```
 
@@ -33,7 +33,7 @@ Foo::BAR()  // Returns an instance of Foo with value 'bar'
 
 As a bonus, you can now use strict comparisons. TypedEnum guarantees there to be only one instance of the same enumerated value at runtime.
 
-```
+```php
 function isBar(Foo $enum): bool {
     return Foo::BAR() === $enum;     
 }
@@ -41,9 +41,9 @@ function isBar(Foo $enum): bool {
 
 ### Return the actual value:
 
-If your application depends on the value assigned tot he enumeration, you can easily fetch it with the getValue() getter.
+If your application depends on the value assigned to the enumeration, you can easily fetch it with the getValue() getter.
 
-```
+```php
 echo Foo::BAR()->getValue(); //'bar'
 ```
 
@@ -52,7 +52,7 @@ echo Foo::BAR()->getValue(); //'bar'
 Resolve an enumeration based on its value.
 The resolve method will return all enumerations with the same value in the array.
 
-```
+```php
 echo Foo::resolve('bar')[0] === Foo::BAR() // true 
 ```
 
@@ -62,7 +62,7 @@ echo Foo::resolve('bar')[0] === Foo::BAR() // true
 
 You can easily use the power of you ide by simply adding @method tags in the docblock of your class like this:
 
-```
+```php
 /**
  * @method static TypedEnum TEST()
  */
@@ -75,12 +75,12 @@ final class Foo extends TypedEnum {
 
 We built TypedEnum with psalm! With these powerful annotations, you can now hint the scalar value of the enumeration:
 
-```
+```php
 /**
- * @method Foo<string> TypedEnum TEST()
+ * @extends TypedEnum<string>
  */
 final class Foo extends TypedEnum {
-    protected const TEST = 'test';
+    private const TEST = 'test';
 }
 ```
 
