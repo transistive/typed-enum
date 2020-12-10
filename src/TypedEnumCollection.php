@@ -58,6 +58,7 @@ final class TypedEnumCollection
                 $tbr[] = $enumValue;
             }
         }
+
         return $tbr;
     }
 }
