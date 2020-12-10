@@ -52,6 +52,13 @@ final class TypedEnumCollection
      */
     public function search($value): array
     {
-        return array_values(array_filter($this->enumValues, static fn ($enum) => $enum->getValue() === $value));
+        $tbr = [];
+        foreach ($this->enumValues as $enumValue) {
+            if ($enumValue->getValue() === $value) {
+                $tbr[] = $enumValue;
+            }
+        }
+
+        return $tbr;
     }
 }

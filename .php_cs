@@ -31,33 +31,14 @@ $finder = Finder::create()
 return Config::create()
     ->setRules([
         '@Symfony' => true,
-        '@PhpCsFixer' => true,
-        '@Symfony:risky' => true,
-        '@PhpCsFixer:risky' => true,
-        '@PHP73Migration' => true,
-        'backtick_to_shell_exec' => true,
-        'date_time_immutable' => true,
-        'declare_strict_types' => true,
-        'phpdoc_to_param_type' => false,
-        'phpdoc_to_return_type' => false,
-        'random_api_migration' => true,
-        'static_lambda' => true,
-        'yoda_style' => false,
 
         'array_syntax' => ['syntax' => 'short'],
         'header_comment' => ['header' => $header],
         'linebreak_after_opening_tag' => true,
         'ordered_imports' => true,
         'phpdoc_order' => true,
-        'no_superfluous_phpdoc_tags' => true,
-        'no_superfluous_elseif' => true,
-        'heredoc_indentation' => false,
-        'native_function_invocation' => false,
-
-        'modernize_types_casting' => true,
-        'no_useless_return' => true,
-        'strict_param' => true,
-        'php_unit_strict' => false,
+        'phpdoc_to_comment' => false,
+        'yoda_style' => false,
     ])
     ->setFinder($finder)
 ;
