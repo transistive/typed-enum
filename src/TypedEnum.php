@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
+use Ds\Sequence;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use function sprintf;
 
@@ -46,7 +47,7 @@ abstract class TypedEnum
      */
     final public static function __callStatic(string $name, $args): self
     {
-        $value = static::bootIfNotBooted()->get(static::class)->get($name);
+        $value = static::bootIfNotBooted()->get(static::class)->get($name, null);
         if ($value === null) {
             throw new NonExistingEnumerationError(sprintf('No enumeration found for: %s::%s', static::class, $name));
         }
@@ -61,11 +62,15 @@ abstract class TypedEnum
      *
      * @param U $constValue
      *
-     * @return array<int, static<U>>
+     * @return Sequence<TypedEnum<U>>
      */
-    final public static function resolve($constValue): ?array
+    final public static function resolve($constValue): Sequence
     {
-        return static::bootIfNotBooted()->get(static::class)->search($constValue);
+        $predicate = static function (string $key, TypedEnum $enum) use ($constValue): bool {
+            return $enum->getValue() === $constValue;
+        };
+
+        return static::bootIfNotBooted()->get(static::class)->filter($predicate)->values();
     }
 
     /**

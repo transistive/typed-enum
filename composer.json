@@ -11,13 +11,17 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=7.4"
+    "php": "^7.4 || ^8.0"
   },
   "require-dev": {
     "phpunit/phpunit": "9.*",
-    "vimeo/psalm": "^3.16",
+    "vimeo/psalm": "^4.0",
     "phpbench/phpbench": "^0.17.1",
-    "friendsofphp/php-cs-fixer": "^2.16"
+    "friendsofphp/php-cs-fixer": "^2.16",
+    "php-ds/php-ds": "^1.3"
+  },
+  "suggest": {
+    "ext-ds": "Needed for optimal performance"
   },
   "autoload": {
     "psr-4": {

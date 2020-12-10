@@ -25,48 +25,53 @@ final class TypedEnumTest extends TestCase
 {
     public function testCallInt(): void
     {
-        static::assertSame(1, TypedEnumFilled::TEST_NUMERIC()->getValue());
+        self::assertSame(1, TypedEnumFilled::TEST_NUMERIC()->getValue());
     }
 
     public function testDifferentInt(): void
     {
-        static::assertSame('abc', TypedEnumFilled::TEST_NO_SAME_VALUE()->getValue());
+        self::assertSame('abc', TypedEnumFilled::TEST_NO_SAME_VALUE()->getValue());
     }
 
     public function testCallString(): void
     {
-        static::assertSame('test', TypedEnumFilled::TEST()->getValue());
+        self::assertSame('test', TypedEnumFilled::TEST()->getValue());
     }
 
     public function testCallSame(): void
     {
-        static::assertSame('same', TypedEnumFilled::TEST_SAME_ONE()->getValue());
-        static::assertSame('same', TypedEnumFilled::TEST_SAME_TWO()->getValue());
+        self::assertSame('same', TypedEnumFilled::TEST_SAME_ONE()->getValue());
+        self::assertSame('same', TypedEnumFilled::TEST_SAME_TWO()->getValue());
     }
 
     public function testResolveInt(): void
     {
-        static::assertSame([TypedEnumFilled::TEST_NUMERIC()], TypedEnumFilled::resolve(1));
+        self::assertSame(TypedEnumFilled::TEST_NUMERIC(), TypedEnumFilled::resolve(1)->get(0));
+        self::assertSame(1, TypedEnumFilled::resolve(1)->count());
     }
 
     public function testResolveDifferent(): void
     {
-        static::assertSame([TypedEnumFilled::TEST_NO_SAME_VALUE()], TypedEnumFilled::resolve('abc'));
+        self::assertSame(TypedEnumFilled::TEST_NO_SAME_VALUE(), TypedEnumFilled::resolve('abc')->get(0));
+        self::assertSame(1, TypedEnumFilled::resolve('abc')->count());
     }
 
     public function testResolveString(): void
     {
-        static::assertSame([TypedEnumFilled::TEST()], TypedEnumFilled::resolve('test'));
+        self::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::resolve('test')->get(0));
+        self::assertSame(1, TypedEnumFilled::resolve('test')->count());
     }
 
     public function testResolveSame(): void
     {
-        static::assertSame([TypedEnumFilled::TEST_SAME_ONE(), TypedEnumFilled::TEST_SAME_TWO()], TypedEnumFilled::resolve('same'));
+        self::assertSame(TypedEnumFilled::TEST_SAME_ONE(), TypedEnumFilled::resolve('same')->get(0));
+        self::assertSame(TypedEnumFilled::TEST_SAME_TWO(), TypedEnumFilled::resolve('same')->get(1));
+        self::assertSame(2, TypedEnumFilled::resolve('same')->count());
     }
 
     public function testGetAllInstances(): void
     {
-        static::assertSame(
+        self::assertSame(
             [
                 'TEST' => TypedEnumFilled::TEST(),
                 'TEST_NO_SAME_VALUE' => TypedEnumFilled::TEST_NO_SAME_VALUE(),
@@ -80,7 +85,7 @@ final class TypedEnumTest extends TestCase
 
     public function testGetAllInstancesReversed(): void
     {
-        static::assertSame(
+        self::assertSame(
             TypedEnumFilled::getAllInstances(),
             [
                 'TEST' => TypedEnumFilled::TEST(),
@@ -94,16 +99,16 @@ final class TypedEnumTest extends TestCase
 
     public function testEqual(): void
     {
-        static::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::TEST());
+        self::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::TEST());
     }
 
     public function testAssertNotSameInExtendedVersion(): void
     {
-        static::assertNotSame(SecondTypedEnum::TEST(), TypedEnumFilled::TEST());
-        static::assertNotSame(SecondTypedEnum::TEST_NO_SAME_VALUE(), TypedEnumFilled::TEST_NO_SAME_VALUE());
-        static::assertNotSame(SecondTypedEnum::TEST_NUMERIC(), TypedEnumFilled::TEST_NUMERIC());
-        static::assertNotSame(SecondTypedEnum::TEST_SAME_ONE(), TypedEnumFilled::TEST_SAME_ONE());
-        static::assertNotSame(SecondTypedEnum::TEST_SAME_TWO(), TypedEnumFilled::TEST_SAME_TWO());
+        self::assertNotSame(SecondTypedEnum::TEST(), TypedEnumFilled::TEST());
+        self::assertNotSame(SecondTypedEnum::TEST_NO_SAME_VALUE(), TypedEnumFilled::TEST_NO_SAME_VALUE());
+        self::assertNotSame(SecondTypedEnum::TEST_NUMERIC(), TypedEnumFilled::TEST_NUMERIC());
+        self::assertNotSame(SecondTypedEnum::TEST_SAME_ONE(), TypedEnumFilled::TEST_SAME_ONE());
+        self::assertNotSame(SecondTypedEnum::TEST_SAME_TWO(), TypedEnumFilled::TEST_SAME_TWO());
     }
 
     public function testNonEnumeration(): void
@@ -114,6 +119,6 @@ final class TypedEnumTest extends TestCase
 
     public function testResolveNull(): void
     {
-        static::assertEmpty(SecondTypedEnum::resolve('fdjker;qahg'));
+        self::assertEmpty(SecondTypedEnum::resolve('fdjker;qahg'));
     }
 }
