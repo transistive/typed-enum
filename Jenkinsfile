@@ -9,13 +9,13 @@ pipeline {
         }
         stage('Static Analysis') {
             steps {
-                sh 'docker run -it php-typed-enum:latest vendor/bin/php-cs-fixer fix --dry-run'
-                sh 'docker run -it php-typed-enum:latest vendor/bin/psalm --show-info=true'
+                sh 'docker run php-typed-enum:latest vendor/bin/php-cs-fixer fix --dry-run'
+                sh 'docker run php-typed-enum:latest vendor/bin/psalm --show-info=true'
             }
         }
         stage('Test') {
             steps {
-                sh 'docker run -it php-typed-enum:latest vendor/bin/phpunit'
+                sh 'docker run php-typed-enum:latest vendor/bin/phpunit'
             }
         }
     }

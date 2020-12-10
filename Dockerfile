@@ -2,12 +2,14 @@ FROM php:7.4-cli-alpine
 
 RUN apk add --no-cache \
         libzip-dev \
+        icu-dev \
         $PHPIZE_DEPS && \
         apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing pandoc && \
         docker-php-ext-configure zip && \
         pecl install ds && \
         docker-php-ext-enable ds && \
-        docker-php-ext-install zip
+        docker-php-ext-install zip intl && \
+        apk del $PHPIZE_DEPS
 
 ARG WITH_XDEBUG=false
 
@@ -22,5 +24,4 @@ COPY composer.json composer.lock phpunit.xml.dist .php_cs psalm.xml ./
 COPY src/ src/
 COPY tests/ tests/
 
-RUN composer install && \
-    apk del $PHPIZE_DEPS
+RUN composer install

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
+use Ds\Map;
 use ReflectionClass;
 
 /**
@@ -20,25 +21,35 @@ use ReflectionClass;
  */
 final class TypedEnumCollectionManager
 {
-    /** @var array<class-string<TypedEnum>, TypedEnumCollection> */
-    private array $mappings = [];
+    /** @var Map<class-string<TypedEnum>, Map<string, TypedEnum>> */
+    private Map $mappings;
+
+    public function __construct()
+    {
+        $this->mappings = new Map();
+    }
 
     /**
      * @template T
      *
      * @param class-string<TypedEnum> $class
+     *
+     * @return Map<string, TypedEnum>
      */
-    public function get(string $class): TypedEnumCollection
+    public function get(string $class): Map
     {
         if (!isset($this->mappings[$class])) {
             $reflector = new ReflectionClass($class);
 
-            $tbr = [];
+            /** @var Map<string, TypedEnum> $tbr */
+            $tbr = new Map();
             foreach ($reflector->getReflectionConstants() as $constant) {
                 $tbr[$constant->getName()] = new $class($constant->getValue());
             }
 
-            $this->mappings[$reflector->getName()] = new TypedEnumCollection($tbr);
+            $this->mappings[$reflector->getName()] = $tbr;
+
+            return $tbr;
         }
 
         return $this->mappings[$class];
