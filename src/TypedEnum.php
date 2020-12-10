@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
-use Laudis\TypedEnum\Errors\InvalidEnumerationError;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use function sprintf;
 
@@ -32,9 +31,10 @@ abstract class TypedEnum
 
     /**
      * @param T $value
+     *
      * @internal
      */
-    public function __construct($value)
+    final public function __construct($value)
     {
         $this->value = $value;
     }
@@ -42,7 +42,7 @@ abstract class TypedEnum
     /**
      * @param null $args
      *
-     * @throws InvalidEnumerationError|NonExistingEnumerationError
+     * @throws NonExistingEnumerationError
      */
     final public static function __callStatic(string $name, $args): self
     {
@@ -61,8 +61,6 @@ abstract class TypedEnum
      *
      * @param U $constValue
      *
-     * @throws InvalidEnumerationError
-     *
      * @return array<int, static<U>>
      */
     final public static function resolve($constValue): ?array
@@ -71,8 +69,6 @@ abstract class TypedEnum
     }
 
     /**
-     * @throws InvalidEnumerationError
-     *
      * @return array<string, TypedEnum>
      */
     final public static function getAllInstances(): array
@@ -88,9 +84,6 @@ abstract class TypedEnum
         return $this->value;
     }
 
-    /**
-     * @throws InvalidEnumerationError
-     */
     private static function bootIfNotBooted(): TypedEnumCollectionManager
     {
         if (self::$manager === null) {
