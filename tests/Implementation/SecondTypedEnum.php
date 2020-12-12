@@ -16,11 +16,13 @@ namespace Laudis\TypedEnum\Tests\Implementation;
 use Laudis\TypedEnum\TypedEnum;
 
 /**
- * @method static<string> TypedEnumFilled TEST()
- * @method static<string> TypedEnumFilled TEST_NO_SAME_VALUE()
- * @method static<int>    TypedEnumFilled TEST_NUMERIC()
- * @method static<string> TypedEnumFilled TEST_SAME_ONE()
- * @method static<string> TypedEnumFilled TEST_SAME_TWO()
+ * @method static SecondTypedEnum TEST()
+ * @method static SecondTypedEnum TEST_NO_SAME_VALUE()
+ * @method static SecondTypedEnum TEST_NUMERIC()
+ * @method static SecondTypedEnum TEST_SAME_ONE()
+ * @method static SecondTypedEnum TEST_SAME_TWO()
+ *
+ * @extends TypedEnum<string|int>
  */
 final class SecondTypedEnum extends TypedEnum
 {

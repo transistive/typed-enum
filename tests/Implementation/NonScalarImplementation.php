@@ -15,6 +15,11 @@ namespace Laudis\TypedEnum\Tests\Implementation;
 
 use Laudis\TypedEnum\TypedEnum;
 
+/**
+ * @method static NonScalarImplementation NULL()
+ *
+ * @extends TypedEnum<null>
+ */
 final class NonScalarImplementation extends TypedEnum
 {
     private const NULL = null;

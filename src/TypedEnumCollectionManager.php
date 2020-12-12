@@ -30,28 +30,29 @@ final class TypedEnumCollectionManager
     }
 
     /**
-     * @template T
+     * @template T of TypedEnum
      *
-     * @param class-string<TypedEnum> $class
+     * @param class-string<T> $class
      *
-     * @return Map<string, TypedEnum>
+     * @return Map<string, T>
      */
     public function get(string $class): Map
     {
-        if (!isset($this->mappings[$class])) {
+        /** @var Map<string, T>|null $tbr */
+        $tbr = $this->mappings->get($class, null);
+
+        if ($tbr === null) {
             $reflector = new ReflectionClass($class);
 
-            /** @var Map<string, TypedEnum> $tbr */
+            /** @var Map<string, T> $tbr */
             $tbr = new Map();
             foreach ($reflector->getReflectionConstants() as $constant) {
-                $tbr[$constant->getName()] = new $class($constant->getValue());
+                $tbr->put($constant->getName(), new $class($constant->getValue()));
             }
 
-            $this->mappings[$reflector->getName()] = $tbr;
-
-            return $tbr;
+            $this->mappings->put($reflector->getName(), $tbr);
         }
 
-        return $this->mappings[$class];
+        return $tbr;
     }
 }
