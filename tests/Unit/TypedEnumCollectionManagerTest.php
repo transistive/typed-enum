@@ -40,6 +40,7 @@ final class TypedEnumCollectionManagerTest extends TestCase
 
     public function testMultiple(): void
     {
+        /** @psalm-suppress InvalidArgument */
         $values = $this->manager->get(SecondTypedEnum::class);
         self::assertEquals(SecondTypedEnum::TEST(), $values->get('TEST'));
         self::assertEquals(SecondTypedEnum::TEST_NO_SAME_VALUE(), $values->get('TEST_NO_SAME_VALUE'));

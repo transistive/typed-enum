@@ -13,7 +13,8 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
-use Ds\Sequence;
+use Ds\Map;
+use Ds\Vector;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use function sprintf;
 
@@ -41,7 +42,7 @@ abstract class TypedEnum
     }
 
     /**
-     * @param null $args
+     * @param void $args
      *
      * @throws NonExistingEnumerationError
      */
@@ -62,23 +63,27 @@ abstract class TypedEnum
      *
      * @param U $constValue
      *
-     * @return Sequence<TypedEnum<U>>
+     * @return Vector<TypedEnum<U>>
      */
-    final public static function resolve($constValue): Sequence
+    final public static function resolve($constValue): Vector
     {
-        $predicate = static function (string $key, TypedEnum $enum) use ($constValue): bool {
-            return $enum->getValue() === $constValue;
-        };
+        /** @var Vector<TypedEnum<U>> $values */
+        $values = new Vector();
+        foreach (static::bootIfNotBooted()->get(static::class) as $enum) {
+            if ($enum->getValue() === $constValue) {
+                $values->push($enum);
+            }
+        }
 
-        return static::bootIfNotBooted()->get(static::class)->filter($predicate)->values();
+        return $values;
     }
 
     /**
-     * @return array<string, TypedEnum>
+     * @return Map<string, static>
      */
-    final public static function getAllInstances(): array
+    public static function getAllInstances(): Map
     {
-        return static::bootIfNotBooted()->get(static::class)->toArray();
+        return static::bootIfNotBooted()->get(static::class);
     }
 
     /**

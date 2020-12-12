@@ -1,5 +1,4 @@
 # Typed Enumerations
-
 Typed-enum is A simple, lightweight and efficient enumeration library. Type hint your enumerated options efficiently and strictly to eliminate unintended side effects and bugs introduced by typos.
 
 ## How to use:
@@ -7,16 +6,13 @@ Typed-enum is A simple, lightweight and efficient enumeration library. Type hint
 ### Download
 
 Download with composer:
-```
-composer require laudis/typed-enum
-```
 
-### Extending from TypedEnum 
+### Extending from TypedEnum
 
 Extend from TypedEnum and use any scalar constants to define the enumeration:
 
 ```php
-final Foo extends TypedEnum {
+final class Foo extends TypedEnum {
     private const BAR = 'bar';
     private const BAZ = 2;
     private const FOO = 2.1;
@@ -26,7 +22,7 @@ final Foo extends TypedEnum {
 You can now create instances of Foo by using the __callstatic method based on the name of the constant:
 
 ```php
-Foo::BAR()  // Returns an instance of Foo with value 'bar'
+Foo::BAR();  // Returns an instance of Foo with value 'bar'
 ```
 
 ### Testing for equality
@@ -67,7 +63,7 @@ You can easily use the power of you ide by simply adding @method tags in the doc
  * @method static TypedEnum TEST()
  */
 final class Foo extends TypedEnum {
-    protected const TEST = 'test';
+    private const TEST = 'test';
 }
 ```
 
@@ -90,7 +86,7 @@ final class Foo extends TypedEnum {
 Php 7.2 allows for protected constants, and 7.4 uses private ones. Use these features to protect against unintended side effects!
 
 ```
-echo Foo::BAR === Foo::BAR() // echo's false but is impossible if it was a protected constant
+echo Foo::BAR === Foo::BAR() // echo's false but is impossible if it is a protected constant
 ```
 
 

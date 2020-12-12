@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum\Tests\Integration;
 
+use Ds\Map;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use Laudis\TypedEnum\Tests\Implementation\SecondTypedEnum;
 use Laudis\TypedEnum\Tests\Implementation\TypedEnumFilled;
@@ -71,29 +72,29 @@ final class TypedEnumTest extends TestCase
 
     public function testGetAllInstances(): void
     {
-        self::assertSame(
-            [
+        self::assertEquals(
+            new Map([
                 'TEST' => TypedEnumFilled::TEST(),
                 'TEST_NO_SAME_VALUE' => TypedEnumFilled::TEST_NO_SAME_VALUE(),
                 'TEST_NUMERIC' => TypedEnumFilled::TEST_NUMERIC(),
                 'TEST_SAME_ONE' => TypedEnumFilled::TEST_SAME_ONE(),
                 'TEST_SAME_TWO' => TypedEnumFilled::TEST_SAME_TWO(),
-            ],
+            ]),
             TypedEnumFilled::getAllInstances()
         );
     }
 
     public function testGetAllInstancesReversed(): void
     {
-        self::assertSame(
-            TypedEnumFilled::getAllInstances(),
-            [
+        self::assertEquals(
+            new Map([
                 'TEST' => TypedEnumFilled::TEST(),
                 'TEST_NO_SAME_VALUE' => TypedEnumFilled::TEST_NO_SAME_VALUE(),
                 'TEST_NUMERIC' => TypedEnumFilled::TEST_NUMERIC(),
                 'TEST_SAME_ONE' => TypedEnumFilled::TEST_SAME_ONE(),
                 'TEST_SAME_TWO' => TypedEnumFilled::TEST_SAME_TWO(),
-            ]
+            ]),
+            TypedEnumFilled::getAllInstances()
         );
     }
 
@@ -114,6 +115,7 @@ final class TypedEnumTest extends TestCase
     public function testNonEnumeration(): void
     {
         $this->expectException(NonExistingEnumerationError::class);
+        /** @psalm-suppress InvalidArgument */
         SecondTypedEnum::ABC();
     }
 
