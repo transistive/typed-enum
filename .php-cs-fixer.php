@@ -28,7 +28,7 @@ $finder = Finder::create()
     ->in(__DIR__.'/tests/')
 ;
 
-return Config::create()
+return (new Config())
     ->setRules([
         '@Symfony' => true,
 

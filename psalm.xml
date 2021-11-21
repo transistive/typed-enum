@@ -18,9 +18,6 @@
             <directory name="vendor"/>
         </ignoreFiles>
     </projectFiles>
-    <stubs>
-        <file name="tools/psalm/vendor/vimeo/psalm/stubs/ext-ds.php"/>
-    </stubs>
     <plugins>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
     </plugins>

@@ -13,44 +13,41 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
-use Ds\Map;
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * @internal
  */
 final class TypedEnumCollectionManager
 {
-    /** @var Map<class-string<TypedEnum>, Map<string, TypedEnum>> */
-    private Map $mappings;
-
-    public function __construct()
-    {
-        $this->mappings = new Map();
-    }
+    /** @var array<class-string<TypedEnum>, array<string, TypedEnum>> */
+    private array $mappings = [];
 
     /**
      * @template T of TypedEnum
      *
      * @param class-string<T> $class
      *
-     * @return Map<string, T>
+     * @throws ReflectionException
+     *
+     * @return array<string, T>
      */
-    public function get(string $class): Map
+    public function get(string $class): array
     {
-        /** @var Map<string, T>|null $tbr */
-        $tbr = $this->mappings->get($class, null);
+        /** @var array<string, T>|null $tbr */
+        $tbr = $this->mappings[$class] ?? null;
 
         if ($tbr === null) {
             $reflector = new ReflectionClass($class);
 
-            /** @var Map<string, T> $tbr */
-            $tbr = new Map();
+            /** @var array<string, T> $tbr */
+            $tbr = [];
             foreach ($reflector->getReflectionConstants() as $constant) {
-                $tbr->put($constant->getName(), new $class($constant->getValue()));
+                $tbr[$constant->getName()] = new $class($constant->getValue());
             }
 
-            $this->mappings->put($reflector->getName(), $tbr);
+            $this->mappings[$reflector->getName()] = $tbr;
         }
 
         return $tbr;

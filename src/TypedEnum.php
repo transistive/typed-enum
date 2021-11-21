@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum;
 
-use Ds\Map;
-use Ds\Vector;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
+use ReflectionException;
 use function sprintf;
 
 /**
@@ -44,11 +43,11 @@ abstract class TypedEnum
     /**
      * @param void $args
      *
-     * @throws NonExistingEnumerationError
+     * @throws NonExistingEnumerationError|ReflectionException
      */
     final public static function __callStatic(string $name, $args): self
     {
-        $value = static::bootIfNotBooted()->get(static::class)->get($name, null);
+        $value = static::bootIfNotBooted()->get(static::class)[$name] ?? null;
         if ($value === null) {
             throw new NonExistingEnumerationError(sprintf('No enumeration found for: %s::%s', static::class, $name));
         }
@@ -59,19 +58,21 @@ abstract class TypedEnum
     /**
      * Resolves the enumeration based on its value.
      *
-     * @template U of scalar
+     * @template U
      *
      * @param U $constValue
      *
-     * @return Vector<TypedEnum<U>>
+     * @throws ReflectionException
+     *
+     * @return list<TypedEnum<U>>
      */
-    final public static function resolve($constValue): Vector
+    final public static function resolve($constValue): array
     {
-        /** @var Vector<TypedEnum<U>> $values */
-        $values = new Vector();
+        /** @var list<TypedEnum<U>> $values */
+        $values = [];
         foreach (static::bootIfNotBooted()->get(static::class) as $enum) {
             if ($enum->getValue() === $constValue) {
-                $values->push($enum);
+                $values[] = $enum;
             }
         }
 
@@ -79,9 +80,11 @@ abstract class TypedEnum
     }
 
     /**
-     * @return Map<string, static>
+     * @throws ReflectionException
+     *
+     * @return array<string, static>
      */
-    public static function getAllInstances(): Map
+    public static function getAllInstances(): array
     {
         return static::bootIfNotBooted()->get(static::class);
     }

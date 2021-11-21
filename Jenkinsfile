@@ -1,49 +1,52 @@
 pipeline {
     agent any
 
-    environment {
-        BRANCH_NAME = "${GIT_BRANCH.split("/").size() > 1 ? GIT_BRANCH.split("/")[1] : GIT_BRANCH}"
-    }
-
     stages {
+        stage('Clone repository') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Pull') {
             steps {
-                sh 'docker-compose -p typed-enum-$BRANCH_NAME -f docker/docker-compose.yml pull'
+                sh 'docker-compose pull'
             }
         }
         stage('Build') {
             steps {
-                sh 'docker build -t php-typed-enum:static-analysis-$BRANCH_NAME .'
-                sh 'docker-compose -p typed-enum-$BRANCH_NAME -f docker/docker-compose.yml build --parallel'
+                sh 'docker-compose build --parallel'
+            }
+        }
+        stage('Teardown') {
+            steps {
+                sh 'docker-compose down --volumes --remove-orphans'
             }
         }
         stage('Static Analysis') {
             steps {
-                sh 'docker run php-typed-enum:static-analysis-$BRANCH_NAME tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --dry-run'
-                sh 'docker run php-typed-enum:static-analysis-$BRANCH_NAME tools/psalm/vendor/bin/psalm --show-info=true'
+                sh 'docker-compose run client vendor/bin/php-cs-fixer fix --dry-run'
+                sh 'docker-compose run client vendor/bin/psalm --show-info=true'
             }
         }
         stage('Test') {
             steps {
-                sh 'docker-compose -f docker/docker-compose.yml -p typed-enum-$BRANCH_NAME run client-80 php vendor/bin/phpunit'
-                sh 'docker-compose -f docker/docker-compose.yml -p typed-enum-$BRANCH_NAME run client-74 php vendor/bin/phpunit'
+                sh 'docker-compose run client php vendor/bin/phpunit'
             }
         }
         stage ('Coverage') {
             steps {
-                sh 'docker-compose -f docker/docker-compose.yml -p typed-enum-$BRANCH_NAME run client sh -c "\
-                    git checkout -B $BRANCH_NAME && \
+                sh 'docker-compose run client bash -c "\
                     cc-test-reporter before-build && \
-                    vendor/bin/phpunit --config phpunit.coverage.xml.dist -d memory_limit=1024M && \
+                    XDEBUG_MODE=coverage vendor/bin/phpunit --config phpunit.coverage.xml.dist -d memory_limit=1024M && \
                     cp out/phpunit/clover.xml clover.xml && \
-                    cc-test-reporter after-build --id 81fb333da6e4359d50bde9e707693157a016508877cc12f6737e6046938c89eb --exit-code 0"'
+                    cc-test-reporter after-build --id ba53635a16f172c606d292e52962b8d05aa53bd8f5407ead59356048829d51cc --exit-code 0"'
             }
         }
     }
 
-     post {
+    post {
         always {
-            sh 'docker-compose -f docker/docker-compose.yml -p typed-enum-$BRANCH_NAME down --volumes'
+            sh 'docker-compose down --volumes'
         }
     }
 }

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Laudis\TypedEnum\Tests\Integration;
 
-use Ds\Map;
 use Laudis\TypedEnum\Errors\NonExistingEnumerationError;
 use Laudis\TypedEnum\Tests\Implementation\SecondTypedEnum;
 use Laudis\TypedEnum\Tests\Implementation\TypedEnumFilled;
@@ -21,6 +20,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
+ * @psalm-suppress PossiblyUndefinedIntArrayOffset
  */
 final class TypedEnumTest extends TestCase
 {
@@ -47,39 +48,39 @@ final class TypedEnumTest extends TestCase
 
     public function testResolveInt(): void
     {
-        self::assertSame(TypedEnumFilled::TEST_NUMERIC(), TypedEnumFilled::resolve(1)->get(0));
-        self::assertSame(1, TypedEnumFilled::resolve(1)->count());
+        self::assertSame(TypedEnumFilled::TEST_NUMERIC(), TypedEnumFilled::resolve(1)[0]);
+        self::assertCount(1, TypedEnumFilled::resolve(1));
     }
 
     public function testResolveDifferent(): void
     {
-        self::assertSame(TypedEnumFilled::TEST_NO_SAME_VALUE(), TypedEnumFilled::resolve('abc')->get(0));
-        self::assertSame(1, TypedEnumFilled::resolve('abc')->count());
+        self::assertSame(TypedEnumFilled::TEST_NO_SAME_VALUE(), TypedEnumFilled::resolve('abc')[0]);
+        self::assertCount(1, TypedEnumFilled::resolve('abc'));
     }
 
     public function testResolveString(): void
     {
-        self::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::resolve('test')->get(0));
-        self::assertSame(1, TypedEnumFilled::resolve('test')->count());
+        self::assertSame(TypedEnumFilled::TEST(), TypedEnumFilled::resolve('test')[0]);
+        self::assertCount(1, TypedEnumFilled::resolve('test'));
     }
 
     public function testResolveSame(): void
     {
-        self::assertSame(TypedEnumFilled::TEST_SAME_ONE(), TypedEnumFilled::resolve('same')->get(0));
-        self::assertSame(TypedEnumFilled::TEST_SAME_TWO(), TypedEnumFilled::resolve('same')->get(1));
-        self::assertSame(2, TypedEnumFilled::resolve('same')->count());
+        self::assertSame(TypedEnumFilled::TEST_SAME_ONE(), TypedEnumFilled::resolve('same')[0]);
+        self::assertSame(TypedEnumFilled::TEST_SAME_TWO(), TypedEnumFilled::resolve('same')[1]);
+        self::assertCount(2, TypedEnumFilled::resolve('same'));
     }
 
     public function testGetAllInstances(): void
     {
         self::assertEquals(
-            new Map([
+            [
                 'TEST' => TypedEnumFilled::TEST(),
                 'TEST_NO_SAME_VALUE' => TypedEnumFilled::TEST_NO_SAME_VALUE(),
                 'TEST_NUMERIC' => TypedEnumFilled::TEST_NUMERIC(),
                 'TEST_SAME_ONE' => TypedEnumFilled::TEST_SAME_ONE(),
                 'TEST_SAME_TWO' => TypedEnumFilled::TEST_SAME_TWO(),
-            ]),
+            ],
             TypedEnumFilled::getAllInstances()
         );
     }
@@ -87,13 +88,13 @@ final class TypedEnumTest extends TestCase
     public function testGetAllInstancesReversed(): void
     {
         self::assertEquals(
-            new Map([
+            [
                 'TEST' => TypedEnumFilled::TEST(),
                 'TEST_NO_SAME_VALUE' => TypedEnumFilled::TEST_NO_SAME_VALUE(),
                 'TEST_NUMERIC' => TypedEnumFilled::TEST_NUMERIC(),
                 'TEST_SAME_ONE' => TypedEnumFilled::TEST_SAME_ONE(),
                 'TEST_SAME_TWO' => TypedEnumFilled::TEST_SAME_TWO(),
-            ]),
+            ],
             TypedEnumFilled::getAllInstances()
         );
     }

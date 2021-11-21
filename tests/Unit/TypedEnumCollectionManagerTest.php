@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
+ * @psalm-suppress PossiblyUndefinedStringArrayOffset
  */
 final class TypedEnumCollectionManagerTest extends TestCase
 {
@@ -35,25 +37,24 @@ final class TypedEnumCollectionManagerTest extends TestCase
     public function testEquals(): void
     {
         $values = $this->manager->get(NonScalarImplementation::class);
-        self::assertEquals(NonScalarImplementation::NULL(), $values->get('NULL'));
+        self::assertEquals(NonScalarImplementation::NULL(), $values['NULL']);
     }
 
     public function testMultiple(): void
     {
         /** @psalm-suppress InvalidArgument */
         $values = $this->manager->get(SecondTypedEnum::class);
-        self::assertEquals(SecondTypedEnum::TEST(), $values->get('TEST'));
-        self::assertEquals(SecondTypedEnum::TEST_NO_SAME_VALUE(), $values->get('TEST_NO_SAME_VALUE'));
-        self::assertEquals(SecondTypedEnum::TEST_NUMERIC(), $values->get('TEST_NUMERIC'));
-        self::assertEquals(SecondTypedEnum::TEST_SAME_ONE(), $values->get('TEST_SAME_ONE'));
-        self::assertEquals(SecondTypedEnum::TEST_SAME_TWO(), $values->get('TEST_SAME_TWO'));
+        self::assertEquals(SecondTypedEnum::TEST(), $values['TEST']);
+        self::assertEquals(SecondTypedEnum::TEST_NO_SAME_VALUE(), $values['TEST_NO_SAME_VALUE']);
+        self::assertEquals(SecondTypedEnum::TEST_NUMERIC(), $values['TEST_NUMERIC']);
+        self::assertEquals(SecondTypedEnum::TEST_SAME_ONE(), $values['TEST_SAME_ONE']);
+        self::assertEquals(SecondTypedEnum::TEST_SAME_TWO(), $values['TEST_SAME_TWO']);
     }
 
     public function testSame(): void
     {
         $values = $this->manager->get(NonScalarImplementation::class);
-        self::assertNotNull($values->get('NULL'));
-        self::assertSame($this->manager->get(NonScalarImplementation::class)->get('NULL'), $values->get('NULL'));
+        self::assertSame($this->manager->get(NonScalarImplementation::class)['NULL'] ?? null, $values['NULL']);
     }
 
     public function testEqualsButNotSame(): void
