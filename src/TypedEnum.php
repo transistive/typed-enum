@@ -58,17 +58,15 @@ abstract class TypedEnum
     /**
      * Resolves the enumeration based on its value.
      *
-     * @template U
-     *
-     * @param U $constValue
+     * @param mixed $constValue
      *
      * @throws ReflectionException
      *
-     * @return list<TypedEnum<U>>
+     * @return list<static>
      */
     final public static function resolve($constValue): array
     {
-        /** @var list<TypedEnum<U>> $values */
+        /** @var list<static> $values */
         $values = [];
         foreach (static::bootIfNotBooted()->get(static::class) as $enum) {
             if ($enum->getValue() === $constValue) {
